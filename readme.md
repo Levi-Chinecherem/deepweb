@@ -89,7 +89,7 @@ This implementation prioritizes modularity, extensibility, and real-time feedbac
 1. **Clone the Repository**:
    ```bash
    git clone https://github.com/Levi-Chinecherem/deepweb.git
-   cd deepfake-detector
+   cd deepweb
    ```
 2. **Set Up Virtual Environment**:
    ```bash
