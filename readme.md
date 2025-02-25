@@ -88,7 +88,7 @@ This implementation prioritizes modularity, extensibility, and real-time feedbac
 ### Steps
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/yourusername/deepfake-detector.git
+   git clone https://github.com/Levi-Chinecherem/deepweb.git
    cd deepfake-detector
    ```
 2. **Set Up Virtual Environment**:
@@ -122,7 +122,7 @@ This implementation prioritizes modularity, extensibility, and real-time feedbac
 
 ## Usage
 
-1. Navigate to `http://127.0.0.1:9000/` in your browser.
+1. Navigate to `http://127.0.0.1:8000/` in your browser.
 2. Drag and drop or select a video file (MP4, AVI, MOV; max 100MB).
 3. View the results, including metadata, visual/audio consistency, decision, and confidence score.
 
