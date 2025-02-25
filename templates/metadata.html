@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-12">
+    <h1 class="text-4xl font-bold mb-8 text-center animate-[fadeIn_1s_ease-in]">
+        Video Metadata
+    </h1>
+    
+    {% if results %}
+    <div class="overflow-x-auto">
+        <table class="w-full bg-gray-800 rounded-lg shadow-xl">
+            <thead>
+                <tr class="bg-gray-700">
+                    <th class="p-4 text-left">Video Name</th>
+                    <th class="p-4 text-left">Metadata</th>
+                    <th class="p-4 text-left">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                <tr class="border-t border-gray-700 hover:bg-gray-750 
+                          transition-colors duration-200 animate-[fadeIn_1s_ease-in]">
+                    <td class="p-4">{{ result.name }}</td>
+                    <td class="p-4">
+                        {% if result.error %}
+                            <span class="text-red-500">{{ result.error }}</span>
+                        {% else %}
+                            Size: {{ result.metadata.size|filesizeformat }}<br>
+                            Duration: {{ result.metadata.duration|floatformat:2 }}s<br>
+                            FPS: {{ result.metadata.fps|floatformat:1 }}<br>
+                            Res: {{ result.metadata.resolution }}
+                        {% endif %}
+                    </td>
+                    <td class="p-4">
+                        {% if result.error %}
+                            <span class="text-red-500">Error</span>
+                        {% else %}
+                            <span class="text-yellow-500">Pending Analysis</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <form method="post" action="{% url 'analyze_deepfake' %}" class="mt-8" id="analyzeForm">
+        {% csrf_token %}
+        <button type="submit" id="analyzeBtn"
+                class="inline-block bg-blue-600 hover:bg-blue-700 py-3 px-6 rounded-lg 
+                       transition-colors duration-300 hover:scale-105 transform disabled:opacity-50">
+            Process Deepfake Analysis
+        </button>
+    </form>
+    <div id="loading" class="hidden mt-4 text-center">
+        <div class="w-full max-w-xs mx-auto bg-gray-700 rounded-full h-2.5">
+            <div class="bg-blue-600 h-2.5 rounded-full animate-pulse" style="width: 100%"></div>
+        </div>
+        <p class="text-gray-400 mt-2">Analyzing Deepfake... Please wait</p>
+    </div>
+    {% else %}
+    <p class="text-center text-gray-400 animate-[fadeIn_1s_ease-in]">
+        No metadata to display. Please upload videos from the home page.
+    </p>
+    <a href="{% url 'home' %}" 
+       class="mt-8 inline-block bg-blue-600 hover:bg-blue-700 py-3 px-6 rounded-lg 
+              transition-colors duration-300 hover:scale-105 transform">
+        Go to Home
+    </a>
+    {% endif %}
+</div>
+
+<script>
+    document.getElementById('analyzeForm').addEventListener('submit', function(e) {
+        // Show loading state
+        document.getElementById('loading').classList.remove('hidden');
+        document.getElementById('analyzeBtn').disabled = true;
+        document.getElementById('analyzeBtn').textContent = 'Processing...';
+    });
+</script>
+{% endblock %}

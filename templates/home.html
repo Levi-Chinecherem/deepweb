@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-12">
+    <h1 class="text-4xl font-bold mb-8 text-center animate-[fadeIn_1s_ease-in]">
+        Deepfake Detection System
+    </h1>
+    
+    {% if error %}
+    <div class="bg-red-500/10 border border-red-500 text-red-300 p-4 rounded-lg mb-6 animate-[fadeIn_0.5s_ease-in]">
+        {{ error }}
+    </div>
+    {% endif %}
+    
+    <div class="max-w-2xl mx-auto bg-gray-800 p-8 rounded-lg shadow-xl transition-all duration-300 hover:shadow-2xl">
+        <form method="post" enctype="multipart/form-data" id="uploadForm"
+              class="space-y-6 animate-[fadeIn_1.5s_ease-in]">
+            {% csrf_token %}
+            <div class="border-2 border-dashed border-gray-600 p-8 rounded-lg 
+                       hover:border-blue-500 transition-colors duration-300"
+                 id="dropzone">
+                <input type="file" name="videos" multiple accept="video/mp4,video/avi,video/mov"
+                       class="hidden" id="fileInput">
+                <p class="text-center text-gray-400" id="dropzoneText">
+                    Drag and drop videos or click to select (Max 100MB each)
+                </p>
+                <ul id="fileList" class="mt-2 text-sm text-gray-300"></ul>
+            </div>
+            <button type="submit" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded-lg 
+                           transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    id="submitBtn" disabled>
+                Analyze Videos
+            </button>
+        </form>
+        <div id="progress" class="hidden mt-4">
+            <div class="w-full bg-gray-700 rounded-full h-2.5">
+                <div class="bg-blue-600 h-2.5 rounded-full transition-all duration-300" 
+                     id="progressBar" style="width: 0%"></div>
+            </div>
+            <p class="text-center text-gray-400 mt-2" id="progressText">Processing...</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const form = document.getElementById('uploadForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const progress = document.getElementById('progress');
+    const progressBar = document.getElementById('progressBar');
+    const fileList = document.getElementById('fileList');
+
+    dropzone.addEventListener('click', () => fileInput.click());
+    
+    dropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropzone.classList.add('border-blue-500');
+    });
+    
+    dropzone.addEventListener('dragleave', () => {
+        dropzone.classList.remove('border-blue-500');
+    });
+    
+    dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        fileInput.files = e.dataTransfer.files;
+        updateFileList();
+        dropzone.classList.remove('border-blue-500');
+    });
+
+    fileInput.addEventListener('change', updateFileList);
+
+    function updateFileList() {
+        fileList.innerHTML = '';
+        const files = Array.from(fileInput.files);
+        const maxSize = 100 * 1024 * 1024;
+        
+        files.forEach(file => {
+            const li = document.createElement('li');
+            li.textContent = file.name + (file.size > maxSize ? ' (Too large)' : '');
+            li.classList.add(file.size > maxSize ? 'text-red-400' : 'text-green-400');
+            fileList.appendChild(li);
+        });
+        
+        submitBtn.disabled = !files.length || files.some(f => f.size > maxSize);
+    }
+
+    form.addEventListener('submit', (e) => {
+        if (!fileInput.files.length || submitBtn.disabled) {
+            e.preventDefault();
+            alert('Please select valid videos');
+            return;
+        }
+        submitBtn.disabled = true;
+        progress.classList.remove('hidden');
+        progressBar.style.width = '100%';  // Simple animation, could be tied to actual progress
+    });
+</script>
+{% endblock %}

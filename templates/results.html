@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-12">
+    <h1 class="text-4xl font-bold mb-8 text-center animate-[fadeIn_1s_ease-in]">
+        Deepfake Analysis Results
+    </h1>
+    
+    {% if results %}
+    <div class="overflow-x-auto">
+        <table class="w-full bg-gray-800 rounded-lg shadow-xl">
+            <thead>
+                <tr class="bg-gray-700">
+                    <th class="p-4 text-left">Video Name</th>
+                    <th class="p-4 text-left">Metadata</th>
+                    <th class="p-4 text-left">Visual %</th>
+                    <th class="p-4 text-left">Audio %</th>
+                    <th class="p-4 text-left">Decision</th>
+                    <th class="p-4 text-left">Confidence</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                <tr class="border-t border-gray-700 hover:bg-gray-750 
+                          transition-colors duration-200 animate-[fadeIn_1s_ease-in]">
+                    <td class="p-4">{{ result.name }}</td>
+                    <td class="p-4">
+                        {% if result.error %}
+                            <span class="text-red-500">{{ result.error }}</span>
+                        {% else %}
+                            Size: {{ result.metadata.size|filesizeformat }}<br>
+                            Duration: {{ result.metadata.duration|floatformat:2 }}s<br>
+                            FPS: {{ result.metadata.fps|floatformat:1 }}<br>
+                            Res: {{ result.metadata.resolution }}
+                        {% endif %}
+                    </td>
+                    <td class="p-4">{{ result.analysis.visual_consistency|default:"N/A" }}%</td>
+                    <td class="p-4">{{ result.analysis.audio_consistency|default:"N/A" }}%</td>
+                    <td class="p-4">
+                        {% if result.error %}
+                            <span class="text-red-500">Error</span>
+                        {% else %}
+                            <span class="{% if result.analysis.decision == 'Fake' %}text-red-500{% else %}text-green-500{% endif %}">
+                                {{ result.analysis.decision }}
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="p-4">{{ result.analysis.confidence|default:"N/A" }}%</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <a href="{% url 'home' %}" 
+       class="mt-8 inline-block bg-blue-600 hover:bg-blue-700 py-3 px-6 rounded-lg 
+              transition-colors duration-300 hover:scale-105 transform">
+        Analyze More Videos
+    </a>
+    {% else %}
+    <p class="text-center text-gray-400 animate-[fadeIn_1s_ease-in]">
+        No results to display. Please upload videos from the home page.
+    </p>
+    <a href="{% url 'home' %}" 
+       class="mt-8 inline-block bg-blue-600 hover:bg-blue-700 py-3 px-6 rounded-lg 
+              transition-colors duration-300 hover:scale-105 transform">
+        Go to Home
+    </a>
+    {% endif %}
+</div>
+{% endblock %}
